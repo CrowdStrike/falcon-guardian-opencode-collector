@@ -1,0 +1,8 @@
+packages:
+  - .
+
+allowBuilds:
+  lefthook: true
+
+injectWorkspacePackages: true
+strictPeerDependencies: true
