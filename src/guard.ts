@@ -51,14 +51,7 @@ export function config(
       env.CS_AIDR_BASE_URL ??
       'https://api.crowdstrike.com/aidr/aiguard',
     timeoutMillis: (opts.timeout ?? 30) * 1000,
-    failureMode:
-      opts.failureMode ??
-      (typeof options === 'object' &&
-      options !== null &&
-      'failureMode' in options &&
-      options.failureMode === 'closed'
-        ? 'closed'
-        : 'open'),
+    failureMode: opts.failureMode ?? 'closed',
   };
 }
 
