@@ -12,16 +12,14 @@
   },
   "type": "module",
   "files": [
-    "dist",
-    "!dist/**/*.test.*",
+    "src",
     "LICENSE.txt",
     "README.md"
   ],
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsc",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "test": "node --test 'src/**/*.test.ts'",
@@ -29,17 +27,23 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@crowdstrike/aidr": "1.3.0",
-    "@opencode/plugin": "2.0.26",
-    "@opencode/schema": "2.0.26",
-    "effect": "4.0.0-rc.112",
-    "plist": "5.0.0",
-    "safe-execa": "0.3.0"
+    "@crowdstrike/aidr": "^1.3.0",
+    "@opencode/plugin": "^2.0.32",
+    "@opencode/schema": "^2.0.32",
+    "plist": "^5.0.0",
+    "safe-execa": "^0.3.0"
+  },
+  "peerDependencies": {
+    "effect": "^4.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.6",
-    "@tsconfig/node22": "22.0.5",
+    "@containerbase/semantic-release-pnpm": "1.4.3",
+    "@tsconfig/node22": "22.0.6",
     "@types/node": "22.19.17",
+    "conventional-changelog-conventionalcommits": "9.3.1",
+    "effect": "4.0.1",
+    "semantic-release": "25.0.9",
     "typescript": "5.9.3"
   }
 }

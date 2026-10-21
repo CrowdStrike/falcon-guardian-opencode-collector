@@ -3,6 +3,7 @@ packages:
 
 allowBuilds:
   lefthook: true
+  msgpackr-extract: true
 
 injectWorkspacePackages: true
 strictPeerDependencies: true
