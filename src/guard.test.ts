@@ -73,7 +73,7 @@ test('token and base URL come from options, then the environment', () => {
     token: 'env-token',
     baseURL: 'https://env',
     timeoutMillis: 30_000,
-    failureMode: 'open',
+    failureMode: 'closed',
   });
   assert.deepEqual(
     guard.config(
@@ -81,7 +81,7 @@ test('token and base URL come from options, then the environment', () => {
         token: 'opt',
         baseURL: 'https://opt',
         timeout: 5,
-        failureMode: 'closed',
+        failureMode: 'open',
       },
       env
     ),
@@ -89,7 +89,7 @@ test('token and base URL come from options, then the environment', () => {
       token: 'opt',
       baseURL: 'https://opt',
       timeoutMillis: 5_000,
-      failureMode: 'closed',
+      failureMode: 'open',
     }
   );
 });
@@ -97,14 +97,14 @@ test('token and base URL come from options, then the environment', () => {
 test('a missing token or invalid options leave no token', () => {
   assert.ok(guard.config({}, {}).token instanceof Error);
   const invalid = guard.config(
-    { token: 1, failureMode: 'closed' },
+    { token: 1, failureMode: 'open' },
     { CS_AIDR_TOKEN: 't' }
   );
   assert.ok(invalid.token instanceof Error);
   assert.equal(invalid.failureMode, 'closed');
   assert.equal(
     guard.config({ failureMode: 'shut' }, { CS_AIDR_TOKEN: 't' }).failureMode,
-    'open'
+    'closed'
   );
 });
 

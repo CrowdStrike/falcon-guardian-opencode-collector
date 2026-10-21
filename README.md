@@ -37,7 +37,7 @@ Load the plugin in `opencode.json(c)`:
 | `token` | `CS_AIDR_TOKEN` | required |
 | `baseURL` | `CS_AIDR_BASE_URL` | `https://api.crowdstrike.com/aidr/aiguard` |
 | `timeout` (seconds) | | `30` |
-| `failureMode` (`open` or `closed`) | | `open` |
+| `failureMode` (`open` or `closed`) | | `closed` |
 
 ## Develop
 
