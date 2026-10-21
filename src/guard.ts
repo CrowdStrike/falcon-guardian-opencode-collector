@@ -13,6 +13,9 @@ export type FailureMode = 'open' | 'closed';
 
 const OPENCODE_PROCESS_TAG = '213584428666668';
 
+/** Allowed base URL hosts. */
+const ALLOWED_HOST = /\.(collector-)?crowdstrike\.com$/;
+
 /**
  * Plugin options from `opencode.json`.
  */
@@ -25,7 +28,7 @@ const Options = Schema.Struct({
 });
 
 export interface Config {
-  /** Collector token, or why there is none. */
+  /** Collector token, or why the collector can't use one. */
   readonly token: string | Error;
   readonly baseURL: string;
   readonly timeoutMillis: number;
@@ -42,14 +45,20 @@ export function config(
   const decoded = Schema.decodeUnknownExit(Options)(options);
   const opts = Exit.isSuccess(decoded) ? decoded.value : {};
   const token = opts.token ?? env.CS_AIDR_TOKEN;
+  const baseURL =
+    opts.baseURL ??
+    env.CS_AIDR_BASE_URL ??
+    'https://api.crowdstrike.com/aidr/aiguard';
+  const url = URL.parse(baseURL);
   return {
     token: Exit.isFailure(decoded)
       ? new Error(`invalid plugin options: ${decoded.cause}`)
-      : (token ?? new Error('CS_AIDR_TOKEN is not set')),
-    baseURL:
-      opts.baseURL ??
-      env.CS_AIDR_BASE_URL ??
-      'https://api.crowdstrike.com/aidr/aiguard',
+      : url?.protocol !== 'https:' || !ALLOWED_HOST.test(url.hostname)
+        ? new Error(
+            `base URL ${baseURL} is not HTTPS on *.crowdstrike.com or *.collector-crowdstrike.com`
+          )
+        : (token ?? new Error('CS_AIDR_TOKEN is not set')),
+    baseURL,
     timeoutMillis: (opts.timeout ?? 30) * 1000,
     failureMode:
       opts.failureMode ??

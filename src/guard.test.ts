@@ -68,10 +68,13 @@ const redacted = (...messages: object[]) => ({
 });
 
 test('token and base URL come from options, then the environment', () => {
-  const env = { CS_AIDR_TOKEN: 'env-token', CS_AIDR_BASE_URL: 'https://env' };
+  const env = {
+    CS_AIDR_TOKEN: 'env-token',
+    CS_AIDR_BASE_URL: 'https://api.us-2.crowdstrike.com/aidr/aiguard',
+  };
   assert.deepEqual(guard.config({}, env), {
     token: 'env-token',
-    baseURL: 'https://env',
+    baseURL: 'https://api.us-2.crowdstrike.com/aidr/aiguard',
     timeoutMillis: 30_000,
     failureMode: 'open',
   });
@@ -79,7 +82,7 @@ test('token and base URL come from options, then the environment', () => {
     guard.config(
       {
         token: 'opt',
-        baseURL: 'https://opt',
+        baseURL: 'https://api.collector-crowdstrike.com',
         timeout: 5,
         failureMode: 'closed',
       },
@@ -87,11 +90,27 @@ test('token and base URL come from options, then the environment', () => {
     ),
     {
       token: 'opt',
-      baseURL: 'https://opt',
+      baseURL: 'https://api.collector-crowdstrike.com',
       timeoutMillis: 5_000,
       failureMode: 'closed',
     }
   );
+});
+
+test('a base URL off CrowdStrike HTTPS hosts leaves no token', () => {
+  for (const baseURL of [
+    'https://evil.com',
+    'https://evilcrowdstrike.com',
+    'https://crowdstrike.com.evil.com',
+    'https://api.crowdstrike.com@evil.com',
+    'https://evil.com\\.crowdstrike.com',
+    'http://api.crowdstrike.com',
+    'not a url',
+  ])
+    assert.ok(
+      guard.config({ baseURL }, { CS_AIDR_TOKEN: 't' }).token instanceof Error,
+      baseURL
+    );
 });
 
 test('a missing token or invalid options leave no token', () => {
