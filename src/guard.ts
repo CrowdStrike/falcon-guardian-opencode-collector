@@ -20,7 +20,6 @@ const ALLOWED_HOST = /\.(collector-)?crowdstrike\.com$/;
  * Plugin options from `opencode.json`.
  */
 const Options = Schema.Struct({
-  token: Schema.optional(Schema.String),
   baseURL: Schema.optional(Schema.String),
   /** Seconds to wait for a verdict, including polling. */
   timeout: Schema.optional(Schema.Number),
@@ -44,7 +43,6 @@ export function config(
 ): Config {
   const decoded = Schema.decodeUnknownExit(Options)(options);
   const opts = Exit.isSuccess(decoded) ? decoded.value : {};
-  const token = opts.token ?? env.CS_AIDR_TOKEN;
   const baseURL =
     opts.baseURL ??
     env.CS_AIDR_BASE_URL ??
@@ -57,7 +55,7 @@ export function config(
         ? new Error(
             `base URL ${baseURL} is not HTTPS on *.crowdstrike.com or *.collector-crowdstrike.com`
           )
-        : (token ?? new Error('CS_AIDR_TOKEN is not set')),
+        : (env.CS_AIDR_TOKEN ?? new Error('CS_AIDR_TOKEN is not set')),
     baseURL,
     timeoutMillis: (opts.timeout ?? 30) * 1000,
     failureMode: opts.failureMode ?? 'closed',
