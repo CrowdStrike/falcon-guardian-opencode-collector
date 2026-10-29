@@ -67,7 +67,7 @@ const redacted = (...messages: object[]) => ({
   result: { transformed: true, guard_output: { messages } },
 });
 
-test('token and base URL come from options, then the environment', () => {
+test('token comes from the environment, base URL from options, then the environment', () => {
   const env = {
     CS_AIDR_TOKEN: 'env-token',
     CS_AIDR_BASE_URL: 'https://api.us-2.crowdstrike.com/aidr/aiguard',
@@ -81,7 +81,6 @@ test('token and base URL come from options, then the environment', () => {
   assert.deepEqual(
     guard.config(
       {
-        token: 'opt',
         baseURL: 'https://api.collector-crowdstrike.com',
         timeout: 5,
         failureMode: 'open',
@@ -89,7 +88,7 @@ test('token and base URL come from options, then the environment', () => {
       env
     ),
     {
-      token: 'opt',
+      token: 'env-token',
       baseURL: 'https://api.collector-crowdstrike.com',
       timeoutMillis: 5_000,
       failureMode: 'open',
@@ -116,7 +115,7 @@ test('a base URL off CrowdStrike HTTPS hosts leaves no token', () => {
 test('a missing token or invalid options leave no token', () => {
   assert.ok(guard.config({}, {}).token instanceof Error);
   const invalid = guard.config(
-    { token: 1, failureMode: 'open' },
+    { timeout: 'soon', failureMode: 'open' },
     { CS_AIDR_TOKEN: 't' }
   );
   assert.ok(invalid.token instanceof Error);
