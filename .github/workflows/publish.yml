@@ -16,6 +16,7 @@ jobs:
   release:
     if: github.repository == 'crowdstrike/falcon-guardian-opencode-collector'
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     environment: release
     permissions:
       contents: write
