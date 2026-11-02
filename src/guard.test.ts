@@ -277,6 +277,13 @@ test('verdicts', () => {
     type: 'block',
     reason: 'Falcon Guardian: SSN was detected and blocked.',
   });
+  const shown = (display_message: string) =>
+    guard.verdict({
+      ...blocked,
+      result: { ...blocked.result, display_message },
+    });
+  assert.deepEqual(shown('Ask IT.'), { type: 'block', reason: 'Ask IT.' });
+  assert.deepEqual(shown(''), { type: 'block', reason: '' });
   assert.throws(() => guard.verdict({ result: { transformed: true } }));
   assert.throws(() => guard.verdict(redacted()));
 });
