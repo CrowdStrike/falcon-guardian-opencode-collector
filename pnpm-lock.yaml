@@ -12,8 +12,8 @@ importers:
   .:
     dependencies:
       '@crowdstrike/aidr':
-        specifier: ^1.3.0
-        version: 1.3.0(typescript@5.9.3)
+        specifier: ^1.4.0
+        version: 1.4.0(typescript@5.9.3)
       '@opencode/plugin':
         specifier: ^2.0.32
         version: 2.0.32(@opentelemetry/semantic-conventions@1.43.0)(redis@6.3.0(@opentelemetry/api@1.9.0))(supports-color@7.2.0)
@@ -238,8 +238,8 @@ packages:
     peerDependencies:
       semantic-release: ^24.0.0 || ^25.0.0
 
-  '@crowdstrike/aidr@1.3.0':
-    resolution: {integrity: sha512-Qh5nHYL7/beYjCxmr/BbQ5XApGemOZWktZLKbywK38JvNoJnwijKV5TnZVgyyP9RcXoQ3uC6ijaWX4zbZwTr/A==}
+  '@crowdstrike/aidr@1.4.0':
+    resolution: {integrity: sha512-EjwhKUk9V2qKKgBWRE5EduGRuDPwR7X4V1FgYc0x8S1fEj0fhwl7UuKV52Yb0pwbWb9TGr/3VkRY4oGVblRlig==}
 
   '@effect/opentelemetry@4.0.1':
     resolution: {integrity: sha512-MZ7M1a1dxMqTqeNwIGSECjO7RrReEgeEwHo8BnbOqP+8IfVpdiJi/iPCmkFVWlAxanMl4qhsq69e0Hkul9t+bA==}
@@ -2603,7 +2603,7 @@ snapshots:
       semantic-release: 25.0.9(supports-color@7.2.0)(typescript@5.9.3)
       semver: 7.8.5
 
-  '@crowdstrike/aidr@1.3.0(typescript@5.9.3)':
+  '@crowdstrike/aidr@1.4.0(typescript@5.9.3)':
     dependencies:
       valibot: 1.5.0(typescript@5.9.3)
     transitivePeerDependencies:

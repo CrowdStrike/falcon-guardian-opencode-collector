@@ -268,7 +268,9 @@ export function verdict(res: {
   if (res.result?.blocked)
     return {
       type: 'block',
-      reason: `Falcon Guardian: ${res.summary ?? 'blocked by policy'}`,
+      reason:
+        res.result.display_message ??
+        `Falcon Guardian: ${res.summary ?? 'blocked by policy'}`,
     };
   if (!res.result?.transformed) return { type: 'allow' };
   const message = Schema.decodeUnknownSync(GuardInput)(
