@@ -35,7 +35,8 @@ export interface Config {
 }
 
 /**
- * The collector config from plugin `options` and `env`.
+ * The collector config from plugin `options` and `env`. Collector-specific
+ * `FALCON_GUARDIAN_OPENCODE_*` variables are preferred over `CS_AIDR_*` ones.
  */
 export function config(
   options: unknown,
@@ -45,8 +46,9 @@ export function config(
   const opts = Exit.isSuccess(decoded) ? decoded.value : {};
   const baseURL =
     opts.baseURL ??
-    env.CS_AIDR_BASE_URL ??
-    'https://api.crowdstrike.com/aidr/aiguard';
+    (env.FALCON_GUARDIAN_OPENCODE_BASE_URL ||
+      env.CS_AIDR_BASE_URL ||
+      'https://api.crowdstrike.com/aidr/aiguard');
   const url = URL.parse(baseURL);
   return {
     token: Exit.isFailure(decoded)
@@ -55,7 +57,11 @@ export function config(
         ? new Error(
             `base URL ${baseURL} is not HTTPS on *.crowdstrike.com or *.collector-crowdstrike.com`
           )
-        : (env.CS_AIDR_TOKEN ?? new Error('CS_AIDR_TOKEN is not set')),
+        : env.FALCON_GUARDIAN_OPENCODE_TOKEN ||
+          env.CS_AIDR_TOKEN ||
+          new Error(
+            'neither FALCON_GUARDIAN_OPENCODE_TOKEN nor CS_AIDR_TOKEN is set'
+          ),
     baseURL,
     timeoutMillis: (opts.timeout ?? 30) * 1000,
     failureMode: opts.failureMode ?? 'closed',
