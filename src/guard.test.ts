@@ -96,6 +96,55 @@ test('token comes from the environment, base URL from options, then the environm
   );
 });
 
+test('collector-specific variables win over shared ones', () => {
+  const env = {
+    FALCON_GUARDIAN_OPENCODE_TOKEN: 'opencode-token',
+    FALCON_GUARDIAN_OPENCODE_BASE_URL: 'https://api.eu-1.crowdstrike.com',
+    CS_AIDR_TOKEN: 'shared-token',
+    CS_AIDR_BASE_URL: 'https://api.us-2.crowdstrike.com',
+  };
+  const { token, baseURL } = guard.config({}, env);
+  assert.deepEqual(
+    { token, baseURL },
+    { token: 'opencode-token', baseURL: 'https://api.eu-1.crowdstrike.com' }
+  );
+  assert.equal(
+    guard.config({ baseURL: 'https://api.collector-crowdstrike.com' }, env)
+      .baseURL,
+    'https://api.collector-crowdstrike.com'
+  );
+});
+
+test('empty variables count as unset', () => {
+  const { token, baseURL } = guard.config(
+    {},
+    {
+      FALCON_GUARDIAN_OPENCODE_TOKEN: '',
+      FALCON_GUARDIAN_OPENCODE_BASE_URL: '',
+      CS_AIDR_TOKEN: 'shared-token',
+      CS_AIDR_BASE_URL: 'https://api.us-2.crowdstrike.com',
+    }
+  );
+  assert.deepEqual(
+    { token, baseURL },
+    { token: 'shared-token', baseURL: 'https://api.us-2.crowdstrike.com' }
+  );
+  const empty = guard.config(
+    {},
+    {
+      FALCON_GUARDIAN_OPENCODE_TOKEN: '',
+      FALCON_GUARDIAN_OPENCODE_BASE_URL: '',
+      CS_AIDR_TOKEN: '',
+      CS_AIDR_BASE_URL: '',
+    }
+  );
+  assert.equal(empty.baseURL, 'https://api.crowdstrike.com/aidr/aiguard');
+  assert.deepEqual(
+    empty.token,
+    new Error('neither FALCON_GUARDIAN_OPENCODE_TOKEN nor CS_AIDR_TOKEN is set')
+  );
+});
+
 test('a base URL off CrowdStrike HTTPS hosts leaves no token', () => {
   for (const baseURL of [
     'https://evil.com',
@@ -106,10 +155,16 @@ test('a base URL off CrowdStrike HTTPS hosts leaves no token', () => {
     'http://api.crowdstrike.com',
     'not a url',
   ])
-    assert.ok(
-      guard.config({ baseURL }, { CS_AIDR_TOKEN: 't' }).token instanceof Error,
-      baseURL
-    );
+    for (const [options, env] of [
+      [{ baseURL }, {}],
+      [{}, { FALCON_GUARDIAN_OPENCODE_BASE_URL: baseURL }],
+      [{}, { CS_AIDR_BASE_URL: baseURL }],
+    ] as const)
+      assert.ok(
+        guard.config(options, { ...env, CS_AIDR_TOKEN: 't' }).token instanceof
+          Error,
+        `${baseURL} ${JSON.stringify(options)} ${JSON.stringify(env)}`
+      );
 });
 
 test('a missing token or invalid options leave no token', () => {
